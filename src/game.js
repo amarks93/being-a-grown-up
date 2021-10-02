@@ -31,4 +31,4 @@ const config = {
   },
 };
 
-const game = new Game(config);
+new Game(config);

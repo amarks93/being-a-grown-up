@@ -1,38 +1,50 @@
 import Phaser from 'phaser';
+// eslint-disable-next-line no-unused-vars
 
 export default class Nina extends Phaser.Physics.Matter.Sprite {
   constructor(data) {
     let { scene, x, y, texture, frame } = data;
     super(scene.matter.world, x, y, texture, frame);
+    this.setScale(0.25, 0.25);
+
+    this.touching = [];
     this.scene.add.existing(this);
+
+    //Thought Bubble
+    this.spriteThought = new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'items', 3);
+    this.spriteThought.setOrigin(0.05, 1.25);
+    this.scene.add.existing(this.spriteThought);
+    this.spriteThought.visible = false;
+    this.spriteThought.depth = 100;
+
+    this.spriteSweat = new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'sweat');
+    this.spriteSweat.setOrigin(0.05, 1.15);
+    this.scene.add.existing(this.spriteSweat);
+    this.spriteSweat.visible = false;
+    this.spriteSweat.depth = 100;
 
     const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 
     // circular collider instead of square - first is collider, second is sensor
     // the num is the radius
-    var ninaCollider = Bodies.circle(this.x, this.y, 12, {
-      isSensor: false,
-      label: 'collider',
-    });
-    var ninaSensor = Bodies.circle(this.x, this.y, 24, {
-      isSensor: true,
-      label: 'sensor',
-    });
-    const compoundBody = Body.create({
-      parts: [ninaCollider, ninaSensor],
-      frictionAir: 0.35,
-    });
-
+    var ninaCollider = Bodies.circle(this.x, this.y, 8, { isSensor: false, label: 'collider' });
+    var ninaSensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: 'sensor' });
+    const compoundBody = Body.create({ parts: [ninaCollider, ninaSensor], frictionAir: 0.35 });
     this.setExistingBody(compoundBody);
+    this.setFixedRotation();
+
+    this.CreateChoreCollisions(ninaSensor);
+    // this.scene.input.on('')
   }
 
   static preload(scene) {
-    scene.load.atlas(
-      'nina',
-      'assets/sprites/nina.png',
-      'assets/sprites/nina_atlas.json'
-    );
+    scene.load.atlas('nina', 'assets/sprites/nina.png', 'assets/sprites/nina_atlas.json');
     scene.load.animation('nina_anim', 'assets/sprites/nina_anim.json');
+    scene.load.spritesheet('items', 'assets/images/items.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
+    scene.load.image('sweat', 'assets/images/sweat.png');
   }
 
   get velocity() {
@@ -40,7 +52,6 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
   }
 
   update() {
-    // this.anims.play('walk-front', true);
     const speed = 1.0;
     let playerVelocity = new Phaser.Math.Vector2();
     if (this.inputKeys.left.isDown) {
@@ -72,5 +83,62 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     } else {
       this.anims.stop();
     }
+
+    this.spriteThought.setPosition(this.x, this.y);
+    this.spriteSweat.setPosition(this.x, this.y);
+    this.thoughtAppears();
+    this.sweatAppears();
   } //end update
+
+  thoughtAppears() {
+    let thinking = this.inputKeys.think;
+
+    if (Phaser.Input.Keyboard.JustDown(thinking)) {
+      this.spriteThought.visible = true;
+      this.doChore();
+    } else if (thinking.isUp) {
+      this.spriteThought.visible = false;
+    }
+  }
+
+  sweatAppears() {
+    let sweating = this.inputKeys.sweat;
+
+    if (Phaser.Input.Keyboard.JustDown(sweating)) {
+      this.spriteSweat.visible = true;
+      this.doChore();
+    } else if (sweating.isUp) {
+      this.spriteSweat.visible = false;
+    }
+  }
+
+  CreateChoreCollisions(ninaSensor) {
+    this.scene.matterCollision.addOnCollideStart({
+      objectA: [ninaSensor],
+      callback: (other) => {
+        if (other.bodyB.isSensor) return;
+        this.touching.push(other.gameObjectB);
+        // console.log(this.touching.length, other.gameObjectB.name);
+      },
+      context: this.scene,
+    });
+
+    this.scene.matterCollision.addOnCollideEnd({
+      objectA: [ninaSensor],
+      callback: (other) => {
+        this.touching = this.touching.filter((gameObject) => gameObject != other.gameObjectB);
+        // console.log(this.touching.length);
+      },
+      context: this.scene,
+    });
+  }
+
+  doChore() {
+    console.log(this.touching.name);
+    this.touching = this.touching.filter((gameObject) => gameObject.action && !gameObject.done);
+    this.touching.forEach((gameObject) => {
+      gameObject.action();
+      if (gameObject.done) gameObject.destroy();
+    });
+  }
 }
