@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import Phaser from 'phaser';
 import Nina from '../players/Nina';
+import Chore from '../chores/Chore';
 
 export default class MainScene extends Phaser.Scene {
   constructor() {
@@ -11,6 +12,7 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     // console.log('preload');
     Nina.preload(this);
+    Chore.preload(this);
     this.load.image('indoorTiles', 'assets/tiles/Indoor Tileset.png');
     this.load.image('bedroomTiles', 'assets/tiles/Bedroom Tileset.png');
     this.load.image('petTiles', 'assets/tiles/Pet Tileset.png');
@@ -18,17 +20,13 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('bathroomTiles', 'assets/tiles/Bathroom Tileset.png');
     // this.load.image('chores', 'assets/images/chores.png');
     this.load.tilemapTiledJSON('indoors', 'assets/tiles/Indoors.json');
-    this.load.atlas(
-      'chores',
-      'assets/images/chores.png',
-      'assets/images/chores_atlas.json'
-    );
   } //end preload
 
   // create game objects
   create() {
     const indoors = this.make.tilemap({ key: 'indoors' });
     this.indoors = indoors;
+
     const indoorTileset = indoors.addTilesetImage(
       'Indoor Tileset',
       'indoorTiles',
@@ -69,6 +67,7 @@ export default class MainScene extends Phaser.Scene {
       0,
       0
     );
+
     const layer1 = indoors.createLayer('Tile Layer 1', indoorTileset, 0, 0); // floors and wallpaper
     const layer2 = indoors.createLayer(
       'Tile Layer 2',
@@ -84,11 +83,13 @@ export default class MainScene extends Phaser.Scene {
       0,
       0
     ); // pet litter boxes, kitchen
+
     layer1.setCollisionByProperty({ collides: true });
     layer2.setCollisionByProperty({ collides: true });
     layer3.setCollisionByProperty({ collides: true });
     layer4.setCollisionByProperty({ collides: true });
     layer5.setCollisionByProperty({ collides: true });
+
     this.matter.world.convertTilemapLayer(layer1);
     this.matter.world.convertTilemapLayer(layer2);
     this.matter.world.convertTilemapLayer(layer3);
@@ -104,7 +105,7 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.addChores();
-    console.log(this.player);
+
     this.player.setScale(0.25, 0.25);
     this.player.inputKeys = this.input.keyboard.addKeys({
       up: Phaser.Input.Keyboard.KeyCodes.W,
@@ -117,30 +118,7 @@ export default class MainScene extends Phaser.Scene {
   addChores() {
     const chores = this.indoors.getObjectLayer('Chores');
     chores.objects.forEach((chore) => {
-      let choreItem = new Phaser.Physics.Matter.Sprite(
-        this.matter.world,
-        chore.x,
-        chore.y,
-        'chores',
-        chore.type
-      );
-      choreItem.x += choreItem.width / 2;
-      choreItem.y -= choreItem.width / 2;
-      choreItem.y = choreItem.y + 3.2;
-      const { Body, Bodies } = Phaser.Physics.Matter.Matter;
-      var circleCollider = Bodies.circle(choreItem.x, choreItem.y, 7, {
-        isSensor: false,
-        label: 'collider',
-      });
-      if (chore.type === 'cup') {
-        circleCollider = Bodies.circle(choreItem.x, choreItem.y, 3, {
-          isSensor: false,
-          label: 'collider',
-        });
-      }
-      choreItem.setExistingBody(circleCollider);
-      choreItem.setStatic(true);
-      this.add.existing(choreItem);
+      let choreItem = new Chore({ scene: this, chore });
     });
   }
 

@@ -22,7 +22,7 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       parts: [ninaCollider, ninaSensor],
       frictionAir: 0.35,
     });
-    // this isn't working??? i can't figure out why
+
     this.setExistingBody(compoundBody);
   }
 
@@ -41,7 +41,7 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
 
   update() {
     // this.anims.play('walk-front', true);
-    const speed = 1.5;
+    const speed = 1.0;
     let playerVelocity = new Phaser.Math.Vector2();
     if (this.inputKeys.left.isDown) {
       playerVelocity.x = -1;
