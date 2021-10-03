@@ -16,12 +16,19 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     this.scene.add.existing(this.spriteThought);
     this.spriteThought.visible = false;
     this.spriteThought.depth = 100;
-
+    //Sweat Mark
     this.spriteSweat = new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'sweat');
     this.spriteSweat.setOrigin(0.05, 1.15);
     this.scene.add.existing(this.spriteSweat);
     this.spriteSweat.visible = false;
     this.spriteSweat.depth = 100;
+    //Exclamation Point
+    this.spriteExclaim = new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'exclaim');
+    this.spriteExclaim.setOrigin(0.5, 1.1);
+    this.scene.add.existing(this.spriteExclaim);
+    this.spriteExclaim.setScale(0.9, 0.9);
+    this.spriteExclaim.visible = false;
+    this.spriteExclaim.depth = 100;
 
     const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -45,6 +52,7 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       frameHeight: 16,
     });
     scene.load.image('sweat', 'assets/images/sweat.png');
+    scene.load.image('exclaim', 'assets/images/exclaim.png');
   }
 
   get velocity() {
@@ -86,8 +94,10 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
 
     this.spriteThought.setPosition(this.x, this.y);
     this.spriteSweat.setPosition(this.x, this.y);
+    this.spriteExclaim.setPosition(this.x, this.y);
     this.thoughtAppears();
     this.sweatAppears();
+    this.exclaimAppears();
   } //end update
 
   thoughtAppears() {
@@ -96,9 +106,13 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     if (Phaser.Input.Keyboard.JustDown(thinking)) {
       this.spriteThought.visible = true;
       this.doChore(thinking.type);
-    } else if (thinking.isUp) {
-      this.spriteThought.visible = false;
+      setTimeout(() => {
+        this.spriteThought.visible = false;
+      }, 1000);
     }
+    // else if (thinking.isUp) {
+    //   this.spriteThought.visible = false;
+    // }
   }
 
   sweatAppears() {
@@ -107,8 +121,30 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     if (Phaser.Input.Keyboard.JustDown(sweating)) {
       this.spriteSweat.visible = true;
       this.doChore(sweating.type);
-    } else if (sweating.isUp) {
-      this.spriteSweat.visible = false;
+      setTimeout(() => {
+        this.spriteSweat.visible = false;
+      }, 1000);
+    }
+    // else if (sweating.isUp) {
+    //   this.spriteSweat.visible = false;
+    // }
+  }
+
+  exclaimAppears(bool = false) {
+    let exclaiming = this.inputKeys.exclaim;
+    exclaiming.type = 'exclaiming';
+    if (Phaser.Input.Keyboard.JustDown(exclaiming)) {
+      this.spriteExclaim.visible = true;
+      setTimeout(() => {
+        this.spriteExclaim.visible = false;
+      }, 1000);
+    } else if (bool === true) {
+      this.spriteExclaim.visible = true;
+      setTimeout(() => {
+        this.spriteExclaim.visible = false;
+      }, 1000);
+      // } else if (bool === false) {
+      //   this.spriteExclaim.visible = false;
     }
   }
 
@@ -136,14 +172,30 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
   doChore(type) {
     this.touching = this.touching.filter((gameObject) => gameObject.action && !gameObject.done);
     this.touching.forEach((gameObject) => {
-      // console.log('GAMEOBJ***', gameObject.name);
-      // console.log('TYPE ***', type);
-      // if (gameObject.name === 'poop' || 'cup' || 'plate') && type === 'sweating') {
-      //   gameObject.action();
-      // } else {
-      //   console.log('oops');
-      // }
-      gameObject.action();
+      let sweatChores = [
+        'poop',
+        'cup',
+        'plate',
+        'female_dress1',
+        'female_dress2',
+        'male_shirt1',
+        'male_pants6',
+      ];
+      let thoughtChores = ['oranges', 'apples-bowl'];
+
+      if (sweatChores.filter((chore) => chore === gameObject.name).length && type === 'sweating') {
+        gameObject.action();
+      } else if (
+        thoughtChores.filter((chore) => chore === gameObject.name).length &&
+        type === 'thinking'
+      ) {
+        gameObject.action();
+      } else {
+        setTimeout(() => {
+          this.exclaimAppears(true);
+        }, 1000);
+      }
+      // gameObject.action();
       if (gameObject.done) gameObject.destroy();
     });
   }

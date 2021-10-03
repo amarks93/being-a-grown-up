@@ -10,7 +10,6 @@ export default class MainScene extends Phaser.Scene {
 
   // where you load images
   preload() {
-    // console.log('preload');
     Nina.preload(this);
     Chore.preload(this);
     this.load.image('indoorTiles', 'assets/tiles/Indoor Tileset.png');
@@ -24,7 +23,6 @@ export default class MainScene extends Phaser.Scene {
 
   // create game objects
   create() {
-    console.log(this);
     this.matter.world.setBounds();
     const indoors = this.make.tilemap({ key: 'indoors' });
     this.indoors = indoors;
@@ -82,6 +80,7 @@ export default class MainScene extends Phaser.Scene {
       right: Phaser.Input.Keyboard.KeyCodes.D,
       think: Phaser.Input.Keyboard.KeyCodes.O,
       sweat: Phaser.Input.Keyboard.KeyCodes.K,
+      exclaim: Phaser.Input.Keyboard.KeyCodes.L,
     });
   } //end create
 
