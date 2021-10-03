@@ -6,7 +6,7 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     let { scene, x, y, texture, frame } = data;
     super(scene.matter.world, x, y, texture, frame);
     this.setScale(0.25, 0.25);
-
+    this.depth = 99;
     this.touching = [];
     this.scene.add.existing(this);
 
@@ -29,6 +29,12 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     this.spriteExclaim.setScale(0.9, 0.9);
     this.spriteExclaim.visible = false;
     this.spriteExclaim.depth = 100;
+    // Heart
+    this.spriteHeart = new Phaser.GameObjects.Sprite(this.scene, 0, 0, 'items', 6);
+    this.spriteHeart.setOrigin(0.05, 1.25);
+    this.scene.add.existing(this.spriteHeart);
+    this.spriteHeart.visible = false;
+    this.spriteHeart.depth = 100;
 
     const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -41,7 +47,6 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     this.setFixedRotation();
 
     this.CreateChoreCollisions(ninaSensor);
-    // this.scene.input.on('')
   }
 
   static preload(scene) {
@@ -53,6 +58,8 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     });
     scene.load.image('sweat', 'assets/images/sweat.png');
     scene.load.image('exclaim', 'assets/images/exclaim.png');
+    scene.load.audio('wrong', 'assets/audio/wrong.mp3');
+    scene.load.audio('yay', 'assets/audio/yay.wav');
   }
 
   get velocity() {
@@ -95,6 +102,7 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     this.spriteThought.setPosition(this.x, this.y);
     this.spriteSweat.setPosition(this.x, this.y);
     this.spriteExclaim.setPosition(this.x, this.y);
+    this.spriteHeart.setPosition(this.x, this.y);
     this.thoughtAppears();
     this.sweatAppears();
     this.exclaimAppears();
@@ -110,9 +118,6 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
         this.spriteThought.visible = false;
       }, 1000);
     }
-    // else if (thinking.isUp) {
-    //   this.spriteThought.visible = false;
-    // }
   }
 
   sweatAppears() {
@@ -125,9 +130,6 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
         this.spriteSweat.visible = false;
       }, 1000);
     }
-    // else if (sweating.isUp) {
-    //   this.spriteSweat.visible = false;
-    // }
   }
 
   exclaimAppears(bool = false) {
@@ -143,8 +145,6 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       setTimeout(() => {
         this.spriteExclaim.visible = false;
       }, 1000);
-      // } else if (bool === false) {
-      //   this.spriteExclaim.visible = false;
     }
   }
 
@@ -170,8 +170,12 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
   }
 
   doChore(type) {
+    console.log('in do chore', this.touching);
+    this.touching.filter((name) => name !== undefined);
+    console.log('in do chore', this.touching);
     this.touching = this.touching.filter((gameObject) => gameObject.action && !gameObject.done);
     this.touching.forEach((gameObject) => {
+      console.log('here');
       let sweatChores = [
         'poop',
         'cup',
@@ -182,8 +186,8 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
         'male_pants6',
       ];
       let thoughtChores = ['oranges', 'apples-bowl'];
-
       if (sweatChores.filter((chore) => chore === gameObject.name).length && type === 'sweating') {
+        console.log('sweatchorefilter');
         gameObject.action();
       } else if (
         thoughtChores.filter((chore) => chore === gameObject.name).length &&
@@ -193,10 +197,23 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       } else {
         setTimeout(() => {
           this.exclaimAppears(true);
+          this.scene.sound.play('wrong');
         }, 1000);
       }
       // gameObject.action();
-      if (gameObject.done) gameObject.destroy();
+      if (gameObject.done) {
+        let score = document.getElementById('score-num');
+        setTimeout(() => {
+          this.scene.sound.play('yay');
+          this.spriteHeart.visible = true;
+          score.innerText = +score.innerText + 10;
+        }, 1000);
+        setTimeout(() => {
+          this.spriteHeart.visible = false;
+        }, 2000);
+
+        gameObject.destroy();
+      }
     });
   }
 }

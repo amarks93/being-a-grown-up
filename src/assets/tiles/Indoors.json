@@ -238,8 +238,8 @@
                  "type":"male_shirt1",
                  "visible":true,
                  "width":16,
-                 "x":240.8,
-                 "y":139.6
+                 "x":208.4,
+                 "y":138.4
                 }, 
                 {
                  "gid":2152,
@@ -637,7 +637,7 @@
                              "rotation":0,
                              "type":"",
                              "visible":true,
-                             "width":1,
+                             "width":3,
                              "x":0,
                              "y":0
                             }],
@@ -11534,6 +11534,46 @@
                 }, 
                 {
                  "id":87,
+                 "objectgroup":
+                    {
+                     "draworder":"index",
+                     "id":2,
+                     "name":"",
+                     "objects":[
+                            {
+                             "height":0,
+                             "id":1,
+                             "name":"",
+                             "rotation":0,
+                             "type":"",
+                             "visible":true,
+                             "width":16,
+                             "x":0,
+                             "y":0
+                            }, 
+                            {
+                             "height":16,
+                             "id":3,
+                             "name":"",
+                             "properties":[
+                                    {
+                                     "name":"collides",
+                                     "type":"bool",
+                                     "value":true
+                                    }],
+                             "rotation":0,
+                             "type":"",
+                             "visible":true,
+                             "width":16,
+                             "x":0,
+                             "y":0
+                            }],
+                     "opacity":1,
+                     "type":"objectgroup",
+                     "visible":true,
+                     "x":0,
+                     "y":0
+                    },
                  "properties":[
                         {
                          "name":"collides",
@@ -12400,14 +12440,32 @@
          "tiles":[
                 {
                  "id":0,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"apples"
                 }, 
                 {
                  "id":1,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"plate"
                 }, 
                 {
                  "id":2,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"poop"
                 }, 
                 {
@@ -12446,26 +12504,62 @@
                      "x":0,
                      "y":0
                     },
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"cup"
                 }, 
                 {
                  "id":4,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"oranges"
                 }, 
                 {
                  "id":5,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"dress1"
                 }, 
                 {
                  "id":6,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"shirt"
                 }, 
                 {
                  "id":7,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"dress2"
                 }, 
                 {
                  "id":8,
+                 "properties":[
+                        {
+                         "name":"drops",
+                         "type":"string",
+                         "value":"[80,0]"
+                        }],
                  "type":"pants"
                 }],
          "tilewidth":16
