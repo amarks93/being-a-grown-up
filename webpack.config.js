@@ -1,13 +1,25 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path');
 
 module.exports = {
+  mode: 'development',
+  entry: './index',
+  output: {
+    filename: 'main.js',
+    path: path.resolve(__dirname, 'build'),
+    clean: true,
+  },
+  stats: {
+    children: true,
+  },
   module: {
     rules: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
+        include: path.resolve(__dirname, 'src/'),
         use: {
           loader: 'babel-loader',
         },
@@ -22,8 +34,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },
@@ -32,10 +44,10 @@ module.exports = {
       template: './src/index.html',
       filename: './index.html',
     }),
-    new MiniCssExtractPlugin({
-      filename: '[name].css',
-      chunkFilename: '[id].css',
-    }),
+    // new MiniCssExtractPlugin({
+    //   filename: './main.css',
+    //   chunkFilename: './main.css',
+    // }),
     new CopyWebpackPlugin({
       patterns: [{ from: './src/assets', to: 'assets' }],
     }),

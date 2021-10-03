@@ -24,6 +24,8 @@ export default class MainScene extends Phaser.Scene {
 
   // create game objects
   create() {
+    console.log(this);
+    this.matter.world.setBounds();
     const indoors = this.make.tilemap({ key: 'indoors' });
     this.indoors = indoors;
 
@@ -46,7 +48,7 @@ export default class MainScene extends Phaser.Scene {
     const layer4 = indoors.createLayer('Tile Layer 4', petTileset, 0, 0); // pet things - cat tree, 3 bowls, 2 pet beds
     const layer5 = indoors.createLayer(
       'Tile Layer 5',
-      [kitchenTileset, petTileset, bathroomTileset],
+      [kitchenTileset, petTileset, bathroomTileset, bedroomTileset],
       0,
       0
     ); // pet litter boxes, kitchen

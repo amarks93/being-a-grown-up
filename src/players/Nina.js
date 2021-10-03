@@ -92,10 +92,10 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
 
   thoughtAppears() {
     let thinking = this.inputKeys.think;
-
+    thinking.type = 'thinking';
     if (Phaser.Input.Keyboard.JustDown(thinking)) {
       this.spriteThought.visible = true;
-      this.doChore();
+      this.doChore(thinking.type);
     } else if (thinking.isUp) {
       this.spriteThought.visible = false;
     }
@@ -103,10 +103,10 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
 
   sweatAppears() {
     let sweating = this.inputKeys.sweat;
-
+    sweating.type = 'sweating';
     if (Phaser.Input.Keyboard.JustDown(sweating)) {
       this.spriteSweat.visible = true;
-      this.doChore();
+      this.doChore(sweating.type);
     } else if (sweating.isUp) {
       this.spriteSweat.visible = false;
     }
@@ -133,10 +133,16 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     });
   }
 
-  doChore() {
-    console.log(this.touching.name);
+  doChore(type) {
     this.touching = this.touching.filter((gameObject) => gameObject.action && !gameObject.done);
     this.touching.forEach((gameObject) => {
+      // console.log('GAMEOBJ***', gameObject.name);
+      // console.log('TYPE ***', type);
+      // if (gameObject.name === 'poop' || 'cup' || 'plate') && type === 'sweating') {
+      //   gameObject.action();
+      // } else {
+      //   console.log('oops');
+      // }
       gameObject.action();
       if (gameObject.done) gameObject.destroy();
     });
