@@ -6,6 +6,7 @@ import Chore from '../chores/Chore';
 export default class MainScene extends Phaser.Scene {
   constructor() {
     super('MainScene');
+    this.gameOver = false;
   }
 
   // where you load images
@@ -19,11 +20,19 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('bathroomTiles', 'assets/tiles/Bathroom Tileset.png');
     // this.load.image('chores', 'assets/images/chores.png');
     this.load.tilemapTiledJSON('indoors', 'assets/tiles/Indoors.json');
+    this.load.audio('dramatic', 'assets/audio/dramatic.wav');
   } //end preload
 
   // create game objects
   create() {
     this.matter.world.setBounds();
+
+    // music
+    this.bool = true;
+    this.music = this.sound.add('dramatic');
+    this.music.loop = true;
+    this.playMusic(this.music, this.bool);
+
     const indoors = this.make.tilemap({ key: 'indoors' });
     this.indoors = indoors;
 
@@ -82,6 +91,14 @@ export default class MainScene extends Phaser.Scene {
       sweat: Phaser.Input.Keyboard.KeyCodes.K,
       exclaim: Phaser.Input.Keyboard.KeyCodes.L,
     });
+
+    this.inputKeys = this.input.keyboard.addKeys({
+      play: Phaser.Input.Keyboard.KeyCodes.P,
+    });
+
+    setInterval(() => {
+      this.updateTime();
+    }, 1000);
   } //end create
 
   addChores() {
@@ -91,10 +108,57 @@ export default class MainScene extends Phaser.Scene {
     });
   }
 
+  playMusic(music, bool) {
+    if (bool === true) {
+      music.play();
+    } else {
+      music.stop();
+    }
+    this.bool = !this.bool;
+  }
+
+  updateTime() {
+    this.choresDone();
+    let time = document.getElementById('time-num');
+    let timeInnerText = time.innerText;
+    let timeArray = timeInnerText.split(':');
+    let timeInMS = timeArray[0] * 60000 + timeArray[1] * 1000;
+    let newTime = timeInMS - 1000;
+    let minutes = Math.floor(newTime / 60000);
+    let seconds = ((newTime % 60000) / 1000).toFixed(0);
+    let zero = seconds < 10 ? '0' : '';
+    if (newTime > 0) {
+      time.innerText = `${minutes}:${zero}${seconds}`;
+      let score = document.getElementById('score-num');
+      if (score.innerText >= 230) {
+        this.playMusic(this.music, false);
+        time.innerText = 'YOU WIN!';
+        // @todo need button to go back to home screen
+        // @todo add victory music
+      }
+    } else {
+      time.innerText = 'GAME OVER';
+      this.gameOver = true;
+      this.playMusic(this.music, false);
+    }
+  }
+
+  choresDone() {
+    const chores = this.indoors.getObjectLayer('Chores');
+    console.log(chores.objects);
+  }
+
   update() {
+    if (this.gameOver) {
+      this.scene.start('TitleScene');
+      // @todo need game over scene
+    }
     this.player.update();
-    // console.log('X', this.player.x);
-    // console.log('Y', this.player.y);
+
+    const music = this.music;
+    if (Phaser.Input.Keyboard.JustDown(this.inputKeys.play)) {
+      this.playMusic(music, this.bool);
+    }
   }
 
   // update called 60 frames per second

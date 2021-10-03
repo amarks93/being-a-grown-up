@@ -148,12 +148,25 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
     }
   }
 
+  showItemHealthDisplay(health = 0) {
+    let healthDisplay = document.getElementById('item-num');
+    if (health !== undefined && this.touching.length > 0) {
+      healthDisplay.innerText = health;
+    } else {
+      healthDisplay.innerText = 0;
+    }
+  }
+
   CreateChoreCollisions(ninaSensor) {
     this.scene.matterCollision.addOnCollideStart({
       objectA: [ninaSensor],
       callback: (other) => {
         if (other.bodyB.isSensor) return;
-        this.touching.push(other.gameObjectB);
+        if (other.gameObjectB !== undefined) {
+          this.touching.push(other.gameObjectB);
+          this.showItemHealthDisplay(other.gameObjectB.health);
+          // console.log(other.gameObjectB.health);
+        }
         // console.log(this.touching.length, other.gameObjectB.name);
       },
       context: this.scene,
@@ -163,6 +176,7 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       objectA: [ninaSensor],
       callback: (other) => {
         this.touching = this.touching.filter((gameObject) => gameObject != other.gameObjectB);
+        this.showItemHealthDisplay();
         // console.log(this.touching.length);
       },
       context: this.scene,
@@ -170,12 +184,9 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
   }
 
   doChore(type) {
-    console.log('in do chore', this.touching);
     this.touching.filter((name) => name !== undefined);
-    console.log('in do chore', this.touching);
     this.touching = this.touching.filter((gameObject) => gameObject.action && !gameObject.done);
     this.touching.forEach((gameObject) => {
-      console.log('here');
       let sweatChores = [
         'poop',
         'cup',
@@ -187,7 +198,6 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       ];
       let thoughtChores = ['oranges', 'apples-bowl'];
       if (sweatChores.filter((chore) => chore === gameObject.name).length && type === 'sweating') {
-        console.log('sweatchorefilter');
         gameObject.action();
       } else if (
         thoughtChores.filter((chore) => chore === gameObject.name).length &&
@@ -202,11 +212,23 @@ export default class Nina extends Phaser.Physics.Matter.Sprite {
       }
       // gameObject.action();
       if (gameObject.done) {
+        let pointsObject = {
+          female_dress1: { points: 35 },
+          female_dress2: { points: 30 },
+          male_shirt1: { points: 32 },
+          male_pants6: { points: 25 },
+          cup: { points: 21 },
+          plate: { points: 18 },
+          poop: { points: 15 },
+          oranges: { points: 8 },
+          'apples-bowl': { points: 10 },
+        };
         let score = document.getElementById('score-num');
         setTimeout(() => {
           this.scene.sound.play('yay');
           this.spriteHeart.visible = true;
-          score.innerText = +score.innerText + 10;
+          let points = pointsObject[gameObject.name].points;
+          score.innerText = +score.innerText + points;
         }, 1000);
         setTimeout(() => {
           this.spriteHeart.visible = false;

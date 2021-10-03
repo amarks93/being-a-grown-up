@@ -45,10 +45,20 @@ export default class Chore extends Phaser.Physics.Matter.Sprite {
     return this.health <= 0;
   }
 
+  updateItemHealthDisplay(health) {
+    const healthDisplay = document.getElementById('item-num');
+    if (!undefined) {
+      healthDisplay.innerText = health;
+    } else {
+      healthDisplay.innerText = 0;
+    }
+  }
+
   action = () => {
-    console.log('action');
     if (this.sound) this.sound.play();
     this.health--;
+    this.updateItemHealthDisplay(this.health);
+
     console.log(`Chore Item: ${this.name}, Health: ${this.health}`);
   };
 
