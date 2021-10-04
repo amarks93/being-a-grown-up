@@ -3,6 +3,7 @@ import PhaserMatterCollisionPlugin from 'phaser-matter-collision-plugin';
 
 import TitleScene from './scenes/TitleScene.js';
 import MainScene from './scenes/MainScene.js';
+import EndScene from './scenes/EndScene.js';
 
 const config = {
   width: 256,
@@ -10,7 +11,7 @@ const config = {
   backgroundColor: '#723d46',
   type: Phaser.AUTO,
   parent: 'being-a-grown-up',
-  scene: [TitleScene, MainScene],
+  scene: [TitleScene, MainScene, EndScene],
   scale: {
     zoom: 2,
   },

@@ -21,6 +21,7 @@ export default class MainScene extends Phaser.Scene {
     // this.load.image('chores', 'assets/images/chores.png');
     this.load.tilemapTiledJSON('indoors', 'assets/tiles/Indoors.json');
     this.load.audio('dramatic', 'assets/audio/dramatic.wav');
+    this.load.audio('opening', 'assets/audio/opening.wav');
   } //end preload
 
   // create game objects
@@ -28,10 +29,16 @@ export default class MainScene extends Phaser.Scene {
     this.matter.world.setBounds();
 
     // music
+    // this.currentSong = 'dramatic';
+
     this.bool = true;
     this.music = this.sound.add('dramatic');
     this.music.loop = true;
     this.playMusic(this.music, this.bool);
+
+    // this.openingBool = false;
+    this.openingMusic = this.sound.add('opening');
+    // this.playMusic(this.openingMusic, this.openingBool);
 
     const indoors = this.make.tilemap({ key: 'indoors' });
     this.indoors = indoors;
@@ -93,10 +100,11 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.inputKeys = this.input.keyboard.addKeys({
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
       play: Phaser.Input.Keyboard.KeyCodes.P,
     });
 
-    setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.updateTime();
     }, 1000);
   } //end create
@@ -114,7 +122,14 @@ export default class MainScene extends Phaser.Scene {
     } else {
       music.stop();
     }
+    // console.log('MUSIC KEY', music.key);
+    // if (music.key === 'opening') {
+    //   this.currentSong = 'opening';
+    //   this.openingBool = !this.openingBool;
+    // } else if (music.key === 'dramatic') {
+    //   this.currentSong = 'dramatic';
     this.bool = !this.bool;
+    // }
   }
 
   updateTime() {
@@ -130,13 +145,14 @@ export default class MainScene extends Phaser.Scene {
     if (newTime > 0) {
       time.innerText = `${minutes}:${zero}${seconds}`;
       let score = document.getElementById('score-num');
-      if (score.innerText >= 230) {
+      if (score.innerText >= 20) {
         this.playMusic(this.music, false);
         time.innerText = 'YOU WIN!';
+        this.playMusic(this.openingMusic, true);
         // @todo need button to go back to home screen
         // @todo add victory music
       }
-    } else {
+    } else if (newTime <= 0) {
       time.innerText = 'GAME OVER';
       this.gameOver = true;
       this.playMusic(this.music, false);
@@ -145,19 +161,30 @@ export default class MainScene extends Phaser.Scene {
 
   choresDone() {
     const chores = this.indoors.getObjectLayer('Chores');
-    console.log(chores.objects);
+    // console.log(chores.objects);
   }
 
   update() {
     if (this.gameOver) {
-      this.scene.start('TitleScene');
+      this.scene.start('EndScene');
       // @todo need game over scene
+      this.gameOver = false;
     }
     this.player.update();
 
     const music = this.music;
     if (Phaser.Input.Keyboard.JustDown(this.inputKeys.play)) {
       this.playMusic(music, this.bool);
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.inputKeys.space)) {
+      this.playMusic(music, false);
+      this.playMusic(this.openingMusic, false);
+      document.getElementById('score-num').innerText = '0';
+      document.getElementById('time-num').innerText = '3:00';
+      document.getElementById('item-num').innerText = '0';
+      clearInterval(this.intervalId);
+      this.scene.start('TitleScene');
     }
   }
 
