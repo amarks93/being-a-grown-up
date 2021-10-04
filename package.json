@@ -6,7 +6,6 @@
   "scripts": {
     "start": "webpack serve --mode development --entry ./src/game.js",
     "build": "webpack --mode development --entry ./src/game.js",
-    "dev": "webpack --mode development --entry ./src/game.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "echo Skip build on Heroku"
   },

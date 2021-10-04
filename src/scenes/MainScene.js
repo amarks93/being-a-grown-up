@@ -145,12 +145,10 @@ export default class MainScene extends Phaser.Scene {
     if (newTime > 0) {
       time.innerText = `${minutes}:${zero}${seconds}`;
       let score = document.getElementById('score-num');
-      if (score.innerText >= 20) {
+      if (score.innerText >= 230) {
         this.playMusic(this.music, false);
         time.innerText = 'YOU WIN!';
         this.playMusic(this.openingMusic, true);
-        // @todo need button to go back to home screen
-        // @todo add victory music
       }
     } else if (newTime <= 0) {
       time.innerText = 'GAME OVER';
@@ -161,13 +159,11 @@ export default class MainScene extends Phaser.Scene {
 
   choresDone() {
     const chores = this.indoors.getObjectLayer('Chores');
-    // console.log(chores.objects);
   }
 
   update() {
     if (this.gameOver) {
       this.scene.start('EndScene');
-      // @todo need game over scene
       this.gameOver = false;
     }
     this.player.update();
