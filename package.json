@@ -7,7 +7,8 @@
     "start": "webpack serve --mode development --entry ./src/game.js",
     "build": "webpack --mode production --entry ./src/game.js",
     "dev": "webpack --mode development --entry ./src/game.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "echo Skip build on Heroku"
   },
   "author": "",
   "license": "ISC",
@@ -28,5 +29,6 @@
   "dependencies": {
     "phaser": "^3.55.2",
     "phaser-matter-collision-plugin": "^1.0.0"
-  }
+  },
+  "heroku-run-build-script": true
 }
