@@ -5,14 +5,17 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',
-  entry: './index',
+  entry: './src/game.js',
   output: {
-    filename: 'main.js',
+    filename: 'bundle.js',
     path: path.resolve(__dirname, 'build'),
     clean: true,
   },
   stats: {
     children: true,
+  },
+  devServer: {
+    port: 3000,
   },
   module: {
     rules: [

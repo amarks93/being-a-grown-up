@@ -4,3 +4,6 @@
   justify-content: center;
   align-items: center;
 }
+
+/* "start": "webpack serve --mode development --entry ./src/game.js", */
+/* "webpack-dev-server": "^4.3.0" */
